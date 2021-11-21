@@ -1,25 +1,10 @@
 import os
 from add import get_modified_enteries
+from util import decompress, compress
 
 # obj_directory = '.objs'
-# cwd = ''
 directory = ".vcs"
-# cwd = os.getcwd()
-# path = os.path.join(cwd, directory)
 
-# obj_path = os.path.join(path, obj_directory)
-
-# def initial_check():
-#     #check if .vcs folder is present in the same directory
-#     if(os.path.exists(path)):
-#         os.chdir(path)
-
-#         #check if objs folder present
-#         if os.path.exists(obj_path):
-#             os.chdir(obj_path)
-#             commit_tree()
-#     else:
-#         print('first run init')
 
 
 # entry = {
@@ -29,35 +14,13 @@ directory = ".vcs"
 #     'type' : ''
 # }
 
-# def helper2(filepath):
-#     tree_entries = list()
-
-#     for something in list(os.listdir(filepath)):
-#         new_path = os.path.join(filepath, something)
-#         if(os.path.isdir(new_path)):
-#             entry = helper2(new_path)
-#             entry['type'] = 'tree'
-#             tree.append(entry)
-
-#         elif(os.path.isfile(new_path)):
-#             entry = addblob(new_path)
-#             entry['type'] = 'blob'
-#             tree.append(entry)
-
-#     tree = dict()
-#     tree['name'] = os.path.split(filepath)[1]
-#     tree['entries'] = tree_entries
-#     entry = add_blob(tree)
-#     return entry
-
-
 # get_staged_files
 # {
 # 'base':{
-#     'files' : {'index.html',}   #set
+#     'files' : {'index.html',}   #dict
 #     'dirs':{
 #         'lib':{
-#             'files' : {}   #set
+#             'files' : {}   #dict
 #               'dirs':{}
 #         },
 #         'lib2':{
@@ -70,12 +33,12 @@ directory = ".vcs"
 cwd = os.getcwd()
 
 
-def helper(staged_files:dict, tree_dict:dict, tree_path:str)->str:
-    """[summary]
+def helper(staged_files: dict, tree_dict: dict, tree_path: str) -> str:
+    """Reformation of a tree based on the staged files
 
     Args:
         staged_files (dict): tree hierarchy directory structure object
-        tree_dict (dict): [description]
+        tree_dict (dict): tree object which was stored in the previous commit
         tree_path (str): file path
 
     Returns:
@@ -89,55 +52,57 @@ def helper(staged_files:dict, tree_dict:dict, tree_path:str)->str:
 
     for entry in tree_dict["entries"]:
         if entry["name"] in staged_files["dirs"].keys():
-            sub_tree_dict = fetch_tree_dict(entry["sha"])
-            # if not sub_tree_dict:
-            #     sub_tree_dict = helper2(
-            #         staged_files["dirs"][entry["name"]],
-            #         os.path.join(tree_path, entry["name"]),
-            #     )
+            sub_tree_dict = decompress(entry["sha"])
+            
+            if not sub_tree_dict:
+                print("error, tree dict not found for hash- ", entry["sha"])
+
             tree_obj = dict()
-            tree_obj['sha'] = helper(
+            tree_obj["name"] = entry["name"]
+            tree_obj["sha"] = helper(
                 staged_files["dirs"][entry["name"]],
-                tree_dict,
+                sub_tree_dict,
                 os.path.join(tree_path, entry["name"]),
             )
-            tree_obj['mode'] = os.stat(os.path.join(cwd, tree_path)).st_mode
+            tree_obj["mode"] = os.stat(
+                os.path.join(cwd, os.path.join(tree_path, entry["name"]))
+            ).st_mode
             tree_obj["type"] = "tree"
             tree_entries.append(tree_obj)
             new_entries.add(entry["name"])
 
-        # elif entry["name"] in staged_files["files"].keys():
-        #     # blob_obj = addblob(os.path.join(tree_path, entry["name"]))
-        #     # blob_obj["type"] = "blob"
-        #     blob_obj = dict()
-        #     blob_obj["name"] = entry
-        #     blob_obj["sha"] = staged_files["files"][entry].sha
-        #     blob_obj["mode"] = staged_files["files"][entry].stat.st_mode
-        #     blob_obj["type"] = "blob"
-        #     tree_entries.append(blob_obj)
-        #     new_entries.add(entry["name"])
-            
-        else:
-            if os.path.isfile(os.path.join(cwd, tree_path)):
-                blob_obj = dict()
-                blob_obj["name"] = entry
-                blob_obj["sha"] = staged_files["files"][entry].sha
-                blob_obj["mode"] = staged_files["files"][entry].stat.st_mode
-                blob_obj["type"] = "blob"
-                tree_entries.append(blob_obj)
-                new_entries.add(entry["name"])
-            
-            else:
-                tree_obj = dict()
-                tree_obj["sha"] = helper2(
-                    staged_files["dirs"][entry], os.path.join(tree_path, entry)
-                )
-                tree_obj["type"] = "tree"
-                tree_obj["mode"] = os.stat(os.path.join(cwd, tree_path)).st_mode
-                tree_obj["name"] = os.path.split(tree_path)[1]
-                
-                tree_entries.append(tree_obj)
-                new_entries.add(entry["name"])
+        elif entry["name"] in staged_files["files"].keys():
+            blob_obj = dict()
+            blob_obj["name"] = entry["name"]
+            blob_obj["sha"] = staged_files["files"][entry["name"]].sha
+            blob_obj["mode"] = staged_files["files"][entry["name"]].stat.st_mode
+            blob_obj["type"] = "blob"
+            tree_entries.append(blob_obj)
+            new_entries.add(entry["name"])
+
+    for entry in staged_files["dirs"].keys():
+        if entry not in new_entries:
+            tree_obj = dict()
+            tree_obj["sha"] = helper2(
+                staged_files["dirs"][entry], os.path.join(tree_path, entry)
+            )
+            tree_obj["type"] = "tree"
+            tree_obj["mode"] = os.stat(
+                os.path.join(cwd, os.path.join(tree_path, entry))
+            ).st_mode
+            tree_obj["name"] = entry
+
+            tree_entries.append(tree_obj)
+
+    for entry in staged_files["files"].keys():
+        if entry not in new_entries:
+            blob_obj = dict()
+            blob_obj["name"] = entry
+            blob_obj["sha"] = staged_files["files"][entry].sha
+            blob_obj["mode"] = staged_files["files"][entry].stat.st_mode
+            blob_obj["type"] = "blob"
+
+            tree_entries.append(blob_obj)
 
     for entry in tree_dict["entries"]:
         if entry["name"] not in new_entries:
@@ -145,11 +110,11 @@ def helper(staged_files:dict, tree_dict:dict, tree_path:str)->str:
 
     tree["entries"] = tree_entries
 
-    return add_tree_obj(tree)
+    return compress(tree)
 
 
 def helper2(staged_files: dict, tree_path: str) -> str:
-    """[summary]
+    """Formation of a new tree based on the staged files
 
     Args:
         staged_files (dict): tree hierarchy directory structure object
@@ -168,7 +133,9 @@ def helper2(staged_files: dict, tree_path: str) -> str:
             staged_files["dirs"][entry], os.path.join(tree_path, entry)
         )
         tree_obj["type"] = "tree"
-        tree_obj["mode"] = os.stat(os.path.join(cwd, tree_path)).st_mode
+        tree_obj["mode"] = os.stat(
+            os.path.join(cwd, os.path.join(tree_path, entry))
+        ).st_mode
         tree_obj["name"] = os.path.split(tree_path)[1]
 
         tree_entries.append(tree_obj)
@@ -183,11 +150,12 @@ def helper2(staged_files: dict, tree_path: str) -> str:
 
     tree["entries"] = tree_entries
 
-    return add_tree_obj(tree)
+    return compress(tree)
 
 
 def helper3(staged_files: dict) -> str:
-    """[summary]
+    """For a new root tree formation
+    mainly for the first commit.
 
     Args:
         staged_files (dict): tree hierarchy directory structure object
@@ -199,13 +167,22 @@ def helper3(staged_files: dict) -> str:
     return helper2(staged_files, tree_name)
 
 
-def commit_tree():
+def commit_tree() -> str:
+    """Used for the formation of the new tree object.
+    Called each time we make a new commit.
+
+    Returns:
+        str: sha of the newly formed tree. None if there are no files to commit
+    """
     added_values = get_staged_tree()
+    if not added_values:
+        print('Nothing to commit')
+        return
     main_tree_sha = get_last_commit_tree()
     if main_tree_sha:
-        main_tree = fetch_tree_dict(main_tree_sha)
-        # if main_tree["name"] in added_values.keys():
-        return helper(added_values[main_tree["name"]], main_tree, main_tree["name"])
+        main_tree = decompress(main_tree_sha)
+        if main_tree["name"] in added_values.keys():
+            return helper(added_values[main_tree["name"]], main_tree, main_tree["name"])
 
     return helper3(added_values)
 
@@ -247,3 +224,37 @@ def get_staged_tree() -> dict:
 #     #objs folder empty
 #     print('nothing to commit')
 #     return
+
+# def initial_check():
+#     #check if .vcs folder is present in the same directory
+#     if(os.path.exists(path)):
+#         os.chdir(path)
+
+#         #check if objs folder present
+#         if os.path.exists(obj_path):
+#             os.chdir(obj_path)
+#             commit_tree()
+#     else:
+#         print('first run init')
+
+
+# def helper2(filepath):
+#     tree_entries = list()
+
+#     for something in list(os.listdir(filepath)):
+#         new_path = os.path.join(filepath, something)
+#         if(os.path.isdir(new_path)):
+#             entry = helper2(new_path)
+#             entry['type'] = 'tree'
+#             tree.append(entry)
+
+#         elif(os.path.isfile(new_path)):
+#             entry = addblob(new_path)
+#             entry['type'] = 'blob'
+#             tree.append(entry)
+
+#     tree = dict()
+#     tree['name'] = os.path.split(filepath)[1]
+#     tree['entries'] = tree_entries
+#     entry = add_blob(tree)
+#     return entry
