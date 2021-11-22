@@ -13,7 +13,7 @@ def compress_file(path):
     data = open(path, 'rb').read()
     hash = hashlib.sha256(data).hexdigest()
     c_data = zlib.compress(data, zlib.Z_BEST_COMPRESSION)
-    f = open('./git/objs/'+os.path.pathsep+hash, 'wb')
+    f = open('./.vcs/obj/'+hash, 'wb')
     f.write(c_data)
     f.close()
     perm = oct(os.stat(path).st_mode)[2:]
