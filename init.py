@@ -18,7 +18,8 @@ def init(base_dir):
         head_path = os.path.join(vcs_dir, 'HEAD')
         main_branch_path = os.path.join(branch_path, 'main')
 
-        os.mknod(main_branch_path)
+        with open(main_branch_path, 'w') as branch:
+            pass
 
         with open(HEAD_PATH, "w") as head:
             head.write("main")

@@ -57,3 +57,4 @@ if __name__ == '__main__':
     add(fpath)
 
     print(util.get_modified_entries())
+    print(util.get_modified_entries()[0].modified if util.get_modified_entries() else "")

@@ -3,7 +3,7 @@ import pickle
 import zlib
 import commit_tree
 import util
-from constants import HEAD_PATH
+from constants import HEAD_PATH, BRANCH_DIR, OBJ_DIR
 import os
 
 
@@ -32,8 +32,8 @@ def commit_util(tree_hash, author_name, commiter_name, commit_message):
             5) update branch/main
     '''
 
-    head = open('./.vcs/HEAD', 'r').read()
-    prev_commit_hash = open('./.vcs/branch/' + head, 'r').read()
+    head = open(HEAD_PATH, 'r').read()
+    prev_commit_hash = open(os.path.join(BRANCH_DIR, head), 'r').read()
 
     commit_dict = {
         "tree": tree_hash,
@@ -51,11 +51,11 @@ def commit_util(tree_hash, author_name, commiter_name, commit_message):
 
     c_data = zlib.compress(data, zlib.Z_BEST_COMPRESSION)
 
-    commit_obj_file = open('./.vcs/obj/' + hash, 'wb')
+    commit_obj_file = open(os.path.join(OBJ_DIR, hash), 'wb')
 
     commit_obj_file.write(c_data)
 
-    open('./.vcs/branch/' + head, 'w').write(hash)
+    open(os.path.join(BRANCH_DIR, head), 'w').write(hash)
 
     print(commit_dict)
 
@@ -64,9 +64,11 @@ def commit_util(tree_hash, author_name, commiter_name, commit_message):
 
 def commit(author_first_name, author_last_name, commit_msg):
     sha = commit_tree.commit_tree()
+    print(sha)
     if sha is not None:
         commit_util(sha, author_first_name, author_last_name, commit_msg)
-
+        for entry in util.get_modified_entries():
+            util.set_modified_status(entry.file_path, False)
 
 if __name__ == '__main__':
     first_name = "user1"

@@ -46,11 +46,11 @@ def compress_tree(dic):
     f.close()
     perm = oct(os.stat(os.path.join(OBJ_DIR, hash)).st_mode)[2:]
     fname = os.path.basename(os.path.join(OBJ_DIR, hash))
-    dic = {}
-    dic['filename'] = fname
-    dic['permissions'] = perm
-    dic['sha1'] = hash
-    return dic
+    # dic = {}
+    # dic['filename'] = fname
+    # dic['permissions'] = perm
+    # dic['sha1'] = hash
+    return hash
 
 
 def decompress_file(hash, path):
@@ -104,5 +104,14 @@ def get_sha_from_index(filepath):
         try:
             sha = index[filepath].sha
             return sha
+        except KeyError:
+            return
+
+def set_modified_status(filepath, modified):
+    with shelve.open(INDEX_PATH) as index:
+        try:
+            entry = index[filepath]
+            entry.modified = modified
+            index[filepath] = entry
         except KeyError:
             return

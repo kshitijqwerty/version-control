@@ -1,3 +1,4 @@
 .idea/**
 .temp/**
 .vscode/**
+__pycache__
