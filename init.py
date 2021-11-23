@@ -1,5 +1,6 @@
 import os
 import sys
+from constants import HEAD_PATH
 
 
 def init(base_dir):
@@ -17,8 +18,10 @@ def init(base_dir):
         head_path = os.path.join(vcs_dir, 'HEAD')
         main_branch_path = os.path.join(branch_path, 'main')
 
-        os.mknod(head_path)
         os.mknod(main_branch_path)
+
+        with open(HEAD_PATH, "w") as head:
+            head.write("main")
     except FileExistsError:
         pass
 
