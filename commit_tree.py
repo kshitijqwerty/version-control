@@ -50,8 +50,7 @@ def helper(staged_files: dict, tree_dict: dict, tree_path: str) -> str:
     new_entries = set()
 
     for entry in tree_dict["entries"]:
-        # if staged_files["dirs"]
-        if entry["name"] in staged_files["dirs"].keys():
+        if staged_files['dirs'] and entry["name"] in staged_files["dirs"].keys():
             sub_tree_dict = util.decompress_tree(entry["sha"])
             
             if not sub_tree_dict:
@@ -65,13 +64,13 @@ def helper(staged_files: dict, tree_dict: dict, tree_path: str) -> str:
                 os.path.join(tree_path, entry["name"]),
             )
             tree_obj["mode"] = os.stat(
-                os.path.join(CWD, os.path.join(tree_path, entry["name"]))
+                os.path.join(os.path.split(CWD)[0], os.path.join(tree_path, entry["name"]))
             ).st_mode
             tree_obj["type"] = "tree"
             tree_entries.append(tree_obj)
             new_entries.add(entry["name"])
 
-        elif entry["name"] in staged_files["files"].keys():
+        elif staged_files['files'] and entry["name"] in staged_files["files"].keys():
             blob_obj = dict()
             blob_obj["name"] = entry["name"]
             blob_obj["sha"] = staged_files["files"][entry["name"]].sha
@@ -89,7 +88,7 @@ def helper(staged_files: dict, tree_dict: dict, tree_path: str) -> str:
                 )
                 tree_obj["type"] = "tree"
                 tree_obj["mode"] = os.stat(
-                    os.path.join(CWD, os.path.join(tree_path, entry))
+                    os.path.join(os.path.split(CWD)[0], os.path.join(tree_path, entry))
                 ).st_mode
                 tree_obj["name"] = entry
 
@@ -137,7 +136,7 @@ def helper2(staged_files: dict, tree_path: str) -> str:
             )
             tree_obj["type"] = "tree"
             tree_obj["mode"] = os.stat(
-                os.path.join(CWD, os.path.join(tree_path, entry))
+                os.path.join(os.path.split(CWD)[0], os.path.join(tree_path, entry))
             ).st_mode
             tree_obj["name"] = os.path.split(tree_path)[1]
 
@@ -168,6 +167,7 @@ def new_commit_tree(staged_files: dict) -> str:
         str: returns the sha of the directory tree
     """
     tree_name = os.path.split(CWD)[1]
+    # print(tree_name)
     return helper2(staged_files[tree_name], tree_name)
 
 
@@ -179,12 +179,14 @@ def commit_tree() -> str:
         str: sha of the newly formed tree. None if there are no files to commit
     """
     added_values = get_staged_tree()
+    
     if not added_values:
         print('Nothing to commit')
         return
     main_tree_sha = util.get_last_commit_tree()
     if main_tree_sha:
-        main_tree = util.decompress_tree(main_tree_sha)
+        main_tree = util.decompress_tree(util.decompress_tree(main_tree_sha)['tree'])
+        # print(main_tree)
         if main_tree["name"] in added_values.keys():
             return helper(added_values[main_tree["name"]], main_tree,
                           main_tree["name"])
@@ -199,6 +201,7 @@ def get_staged_tree() -> dict:
         dict: modified/staged tree object
     """
     modified_entries = util.get_modified_entries()
+    print('modified entries', modified_entries)
     if len(modified_entries) == 0:
         return
     staged_tree = dict()
