@@ -70,6 +70,7 @@ def commit(author_first_name, author_last_name, commit_msg):
         for entry in util.get_modified_entries():
             util.set_modified_status(entry.file_path, False)
 
+
 if __name__ == '__main__':
     first_name = "user1"
     last_name = "xyz"

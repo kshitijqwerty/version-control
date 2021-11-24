@@ -12,7 +12,7 @@ from constants import VCS_BASE
 
 def stage(file_path, modified):
     # create a blob object
-    sha = util.compress_file(file_path)['sha1']
+    sha = util.compress_file(file_path)['sha256']
 
     entry = util.Entry(file_path, sha, os.stat(file_path), modified)
     print("entry: ", entry)

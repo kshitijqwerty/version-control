@@ -17,13 +17,13 @@ class Entry:
 def get_sha(path):
     with open(path, 'rb') as file:
         data = file.read()
-        hash = hashlib.sha1(data).hexdigest()
+        hash = hashlib.sha256(data).hexdigest()
         return hash
 
 
 def compress_file(path):
     data = open(path, 'rb').read()
-    hash = hashlib.sha1(data).hexdigest()
+    hash = hashlib.sha256(data).hexdigest()
     c_data = zlib.compress(data, zlib.Z_BEST_COMPRESSION)
     f = open(os.path.join(OBJ_DIR, hash), 'wb')
     f.write(c_data)
@@ -33,23 +33,23 @@ def compress_file(path):
     dic = {}
     dic['filename'] = fname
     dic['permissions'] = perm
-    dic['sha1'] = hash
+    dic['sha256'] = hash
     return dic
 
 
 def compress_tree(dic):
     data = pickle.dumps(dic)
-    hash = hashlib.sha1(data).hexdigest()
+    hash = hashlib.sha256(data).hexdigest()
     c_data = zlib.compress(data, zlib.Z_BEST_COMPRESSION)
     f = open(os.path.join(OBJ_DIR, hash), 'wb')
     f.write(c_data)
     f.close()
-    perm = oct(os.stat(os.path.join(OBJ_DIR, hash)).st_mode)[2:]
-    fname = os.path.basename(os.path.join(OBJ_DIR, hash))
+    # perm = oct(os.stat(os.path.join(OBJ_DIR, hash)).st_mode)[2:]
+    # fname = os.path.basename(os.path.join(OBJ_DIR, hash))
     # dic = {}
     # dic['filename'] = fname
     # dic['permissions'] = perm
-    # dic['sha1'] = hash
+    # dic['sha256'] = hash
     return hash
 
 
@@ -68,21 +68,21 @@ def decompress_tree(hash):
     return dic
 
 
-def get_head():
+def get_head_content():
     data = open(HEAD_PATH).read()
     print("get_head: ", data)
     return data
 
 
-def get_branch(name):
+def get_branch_content(name):
     print(name)
     data = open(os.path.join(BRANCH_DIR, name)).read()
     print(data)
     return data
 
 
-def get_last_commit_tree():
-    return get_branch(get_head())
+def get_last_commit_tree_hash():
+    return get_branch_content(get_head_content())
 
 
 def get_modified_entries():
@@ -107,6 +107,7 @@ def get_sha_from_index(filepath):
         except KeyError:
             return
 
+
 def set_modified_status(filepath, modified):
     with shelve.open(INDEX_PATH) as index:
         try:
@@ -115,3 +116,9 @@ def set_modified_status(filepath, modified):
             index[filepath] = entry
         except KeyError:
             return
+
+
+def decompress_commit(commit_hash):
+    with open(os.path.join(OBJ_DIR, commit_hash), 'rb') as commit_obj:
+        data = zlib.decompress(commit_obj.read())
+        return pickle.loads(data)
