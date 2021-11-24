@@ -32,7 +32,7 @@ directory = ".vcs"
 
 
 
-def helper(staged_files: dict, tree_dict: dict, tree_path: str) -> str:
+def reform_commit_tree(staged_files: dict, tree_dict: dict, tree_path: str) -> str:
     """Reformation of a tree based on the staged files
 
     Args:
@@ -58,13 +58,13 @@ def helper(staged_files: dict, tree_dict: dict, tree_path: str) -> str:
 
             tree_obj = dict()
             tree_obj["name"] = entry["name"]
-            tree_obj["sha"] = helper(
+            tree_obj["sha"] = reform_commit_tree(
                 staged_files["dirs"][entry["name"]],
                 sub_tree_dict,
                 os.path.join(tree_path, entry["name"]),
             )
             tree_obj["mode"] = os.stat(
-                os.path.join(os.path.split(CWD)[0], os.path.join(tree_path, entry["name"]))
+                os.path.join(CWD, os.path.join(tree_path, entry["name"]))
             ).st_mode
             tree_obj["type"] = "tree"
             tree_entries.append(tree_obj)
@@ -83,12 +83,12 @@ def helper(staged_files: dict, tree_dict: dict, tree_path: str) -> str:
         for entry in staged_files["dirs"].keys():
             if entry not in new_entries:
                 tree_obj = dict()
-                tree_obj["sha"] = helper2(
+                tree_obj["sha"] = new_commit_tree_helper(
                     staged_files["dirs"][entry], os.path.join(tree_path, entry)
                 )
                 tree_obj["type"] = "tree"
                 tree_obj["mode"] = os.stat(
-                    os.path.join(os.path.split(CWD)[0], os.path.join(tree_path, entry))
+                    os.path.join(CWD, os.path.join(tree_path, entry))
                 ).st_mode
                 tree_obj["name"] = entry
 
@@ -114,7 +114,7 @@ def helper(staged_files: dict, tree_dict: dict, tree_path: str) -> str:
     return util.compress_tree(tree)
 
 
-def helper2(staged_files: dict, tree_path: str) -> str:
+def new_commit_tree_helper(staged_files: dict, tree_path: str) -> str:
     """Formation of a new tree based on the staged files
 
     Args:
@@ -131,14 +131,14 @@ def helper2(staged_files: dict, tree_path: str) -> str:
     if staged_files["dirs"]:
         for entry in staged_files["dirs"].keys():
             tree_obj = dict()
-            tree_obj["sha"] = helper2(
+            tree_obj["sha"] = new_commit_tree_helper(
                 staged_files["dirs"][entry], os.path.join(tree_path, entry)
             )
             tree_obj["type"] = "tree"
             tree_obj["mode"] = os.stat(
-                os.path.join(os.path.split(CWD)[0], os.path.join(tree_path, entry))
+                os.path.join(CWD, os.path.join(tree_path, entry))
             ).st_mode
-            tree_obj["name"] = os.path.split(tree_path)[1]
+            tree_obj["name"] = entry
 
             tree_entries.append(tree_obj)
 
@@ -166,9 +166,10 @@ def new_commit_tree(staged_files: dict) -> str:
     Returns:
         str: returns the sha of the directory tree
     """
-    tree_name = os.path.split(CWD)[1]
+    tree_name = ''
+    # tree_name = os.path.split(CWD)[1]
     # print(tree_name)
-    return helper2(staged_files[tree_name], tree_name)
+    return new_commit_tree_helper(staged_files[tree_name], tree_name)
 
 
 def commit_tree() -> str:
@@ -188,7 +189,7 @@ def commit_tree() -> str:
         main_tree = util.decompress_tree(util.decompress_tree(main_tree_sha)['tree'])
         # print(main_tree)
         if main_tree["name"] in added_values.keys():
-            return helper(added_values[main_tree["name"]], main_tree,
+            return reform_commit_tree(added_values[main_tree["name"]], main_tree,
                           main_tree["name"])
 
     return new_commit_tree(added_values)
@@ -201,16 +202,23 @@ def get_staged_tree() -> dict:
         dict: modified/staged tree object
     """
     modified_entries = util.get_modified_entries()
-    print('modified entries', modified_entries)
     if len(modified_entries) == 0:
         return
     staged_tree = dict()
     common_object = {"files": None, "dirs": None}
-    root_dir_name = os.path.split(CWD)[1]
+    root_dir_name = ''
+    # root_dir_name = os.path.split(CWD)[1]
     staged_tree[root_dir_name] = {**common_object}
 
     for entry in modified_entries:
         file_path_parts = os.path.normpath(entry.file_path).split(os.sep)
+        i = 0
+        while i < len(file_path_parts):
+            if file_path_parts[i] == '.':
+                file_path_parts.pop(i)
+            else:
+                i += 1
+        file_path_parts = file_path_parts[1:]
         curr_dir = staged_tree[root_dir_name]
         for part in file_path_parts[:-1]:
             if not curr_dir["dirs"]:
@@ -247,13 +255,13 @@ def get_staged_tree() -> dict:
 #         print('first run init')
 
 
-# def helper2(filepath):
+# def new_commit_tree_helper(filepath):
 #     tree_entries = list()
 
 #     for something in list(os.listdir(filepath)):
 #         new_path = os.path.join(filepath, something)
 #         if(os.path.isdir(new_path)):
-#             entry = helper2(new_path)
+#             entry = new_commit_tree_helper(new_path)
 #             entry['type'] = 'tree'
 #             tree.append(entry)
 
