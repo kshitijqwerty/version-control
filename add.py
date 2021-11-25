@@ -37,24 +37,32 @@ def get_entry(file_path):
 #     return modified_enteries
 
 
-def add(file_path):
-    file_stat = os.stat(file_path)
-    modified = False
-    try:
-        index_stat = get_entry(file_path).stat
-        modified = file_stat != index_stat
-        if not modified:
-            return
-    except KeyError:
-        modified = True
+def add(path):
+    if os.path.isdir(path):
+        for filename in os.listdir(path):
+            add(os.path.join(path, filename))
+    else:
+        try:
+            # index_stat = get_entry(file_path).stat
+            # modified = file_stat != index_stat
+            index_sha = get_entry(path).sha
+            # print(index_sha)
+            file_sha = util.get_sha(path)
+            # print(file_sha)
+            modified = file_sha != index_sha
+            print(modified)
+            if not modified:
+                return
+        except KeyError:
+            modified = True
 
-    # if modified - create blob object of the file and add to staging area
-    stage(file_path, modified)
+        # if modified - create blob object of the file and add to staging area
+        stage(path, modified)
 
 
 if __name__ == '__main__':
     fpath = sys.argv[1]
     add(fpath)
 
-    print(util.get_modified_entries())
-    print(util.get_modified_entries()[0].modified if util.get_modified_entries() else "")
+    # print(util.get_modified_entries())
+    # print(util.get_modified_entries()[0].modified if util.get_modified_entries() else "")

@@ -53,12 +53,16 @@ def compress_tree(dic):
     return hash
 
 
-def decompress_file(hash, path):
+def decompress_file(hash, path=None):
     data = open(os.path.join(OBJ_DIR, hash), 'rb').read()
     data = zlib.decompress(data)
-    f = open(path, 'wb')
-    f.write(data)
-    f.close()
+    print('path: ', path)
+    print("decompress file: ", data)
+    if path is not None:
+        f = open(path, 'wb')
+        f.write(data)
+        f.close()
+    return data
 
 
 def decompress_tree(hash):
@@ -74,15 +78,45 @@ def get_head_content():
     return data
 
 
+def set_head_content(content):
+    with open(HEAD_PATH, "w") as head:
+        head.write(content)
+
+
 def get_branch_content(name):
-    print(name)
-    data = open(os.path.join(BRANCH_DIR, name)).read()
-    print(data)
-    return data
+    try:
+        print(name)
+        data = open(os.path.join(BRANCH_DIR, name)).read()
+        print(data)
+        return data
+    except Exception as e:
+        return
 
 
-def get_last_commit_tree_hash():
-    return get_branch_content(get_head_content())
+def set_branch_content(name, content):
+    with open(os.path.join(BRANCH_DIR, name), "w") as branch:
+        branch.write(content)
+
+
+def create_branch(name):
+    content = get_branch_content(get_head_content())
+    set_branch_content(name, content)
+
+
+def delete_branch(name):
+    if name == get_head_content():
+        print("cannot delete current branch")
+        return
+    os.remove(os.path.join(BRANCH_DIR, name))
+
+
+def get_last_commit_hash():
+    head_content = get_head_content()
+    branch_content = get_branch_content(head_content)
+    if branch_content is None:
+        return head_content
+
+    return branch_content
 
 
 def get_modified_entries():

@@ -1,11 +1,15 @@
 """ display difference between a file(indexed) and another file(not indexed) """
+import shelve
+import sys
 
-from constants import OBJ_DIR, BRANCH_DIR, HEAD_PATH
-from hashlib import sha256 
+import util
+from constants import OBJ_DIR, BRANCH_DIR, HEAD_PATH, INDEX_PATH
+from hashlib import sha256
 import difflib
 import pickle
 import zlib
 import os
+
 
 def diff_strstr(str1, str2):
     """ 
@@ -19,8 +23,10 @@ def diff_strstr(str1, str2):
     list1 = str1.splitlines()
     list2 = str2.splitlines()
 
-    for line in difflib.unified_diff(list1, list2, fromfile='Commited File', tofile='Staged File', lineterm=''):
-        print(line)
+    for line in difflib.unified_diff(list1, list2, fromfile='Commited File',
+                                     tofile='Staged File', lineterm=''):
+        if line[0] in ['+', '-']:
+            print(line)
 
 
 def diff_util(blob_hash, file_path):
@@ -35,26 +41,33 @@ def diff_util(blob_hash, file_path):
         Their differences
     """
 
-    with open(os.path.join(OBJ_DIR, blob_hash), 'rb') as f:
-        commit_obj_file = f.read()
+    # with open(os.path.join(OBJ_DIR, blob_hash), 'rb') as f:
+    #     commit_obj_file = f.read()
 
     with open(file_path, 'r') as f:
         current_file = f.read()
 
-    commit_obj_file = zlib.decompress(commit_obj_file)
+    # commit_obj_file = zlib.decompress(commit_obj_file)
 
+    commit_obj_file = util.decompress_file(blob_hash)
     print("Difference:", file_path)
+    print("commit_obj_file: ", commit_obj_file)
 
-    diff_strstr(commit_obj_file, current_file)
+    diff_strstr(commit_obj_file.decode('utf-8'), current_file)
 
 
 def get_sha_from_index(filepath):
+    print("get_sha_from_index: ", filepath)
     with shelve.open(INDEX_PATH) as index:
         try:
+            print(type(index))
+            print(index)
+            print(index[filepath])
             sha = index[filepath].sha
             return sha
         except KeyError:
             return
+
 
 def diff(file_path):
     """ 
@@ -69,23 +82,26 @@ def diff(file_path):
     """
     if os.path.isfile(file_path):
         commited_file_hash = get_sha_from_index(file_path)
-        
-        if(commited_file_hash == None):
-            print("New file:", f)
-        else:    
+
+        if (commited_file_hash == None):
+            print("New file:", file_path)
+        else:
             diff_util(commited_file_hash, file_path)
-    
+
     elif os.path.isdir(file_path):
         for filename in os.listdir(file_path):
             f = os.path.join(file_path, filename)
-            
+
             if os.path.isfile(f):
                 commited_file_hash = get_sha_from_index(f)
-                if(commited_file_hash == None):
+                if (commited_file_hash == None):
                     print("New file:", f)
-                else:    
+                else:
                     diff_util(commited_file_hash, f)
-            
+
             elif os.path.isdir(f):
                 diff(f)
 
+
+if __name__ == '__main__':
+    diff(sys.argv[1])

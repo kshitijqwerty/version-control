@@ -184,7 +184,7 @@ def commit_tree() -> str:
     if not added_values:
         print('Nothing to commit')
         return
-    main_tree_sha = util.get_last_commit_tree_hash()
+    main_tree_sha = util.get_last_commit_hash()
     if main_tree_sha:
         main_tree = util.decompress_tree(util.decompress_tree(main_tree_sha)['tree'])
         # print(main_tree)
