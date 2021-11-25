@@ -1,5 +1,6 @@
 """ display difference between a file(indexed) and another file(not indexed) """
 
+from constants import OBJ_DIR, BRANCH_DIR, HEAD_PATH
 from hashlib import sha256 
 import difflib
 import pickle
@@ -34,9 +35,11 @@ def diff_util(blob_hash, file_path):
         Their differences
     """
 
-    commit_obj_file = open('./.vcs/obj/'+blob_hash, 'rb').read()
+    with open(os.path.join(OBJ_DIR, blob_hash), 'rb') as f:
+        commit_obj_file = f.read()
 
-    current_file = open(file_path, 'r').read()
+    with open(file_path, 'r') as f:
+        current_file = f.read()
 
     commit_obj_file = zlib.decompress(commit_obj_file)
 
@@ -85,4 +88,4 @@ def diff(file_path):
             
             elif os.path.isdir(f):
                 diff(f)
-            
+
