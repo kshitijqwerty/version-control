@@ -60,9 +60,9 @@ def add(path):
         stage(path, modified)
 
 
-if __name__ == '__main__':
-    fpath = sys.argv[1]
-    add(fpath)
+# if __name__ == '__main__':
+#     fpath = sys.argv[1]
+#     add(fpath)
 
     # print(util.get_modified_entries())
     # print(util.get_modified_entries()[0].modified if util.get_modified_entries() else "")

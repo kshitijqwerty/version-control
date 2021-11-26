@@ -62,19 +62,19 @@ def commit_util(tree_hash, author_name, commiter_name, commit_message):
 
 # commit_util("1234asdf", "sarthak", "rawat", "my first commit")
 
-def commit(author_first_name, author_last_name, commit_msg):
+def commit(commit_msg, author_first_name="user1", author_last_name="xyz"):
     sha = commit_tree.commit_tree()
-    print(sha)
+    # print(sha)
     if sha is not None:
         commit_util(sha, author_first_name, author_last_name, commit_msg)
         for entry in util.get_modified_entries():
             util.set_modified_status(entry.file_path, False)
 
 
-if __name__ == '__main__':
-    first_name = "user1"
-    last_name = "xyz"
-    commit_msg = "First commit"
+# if __name__ == '__main__':
+#     first_name = "user1"
+#     last_name = "xyz"
+#     commit_msg = "First commit"
 
-    print(util.get_modified_entries())
-    commit(first_name, last_name, commit_msg)
+#     # print(util.get_modified_entries())
+#     commit(first_name, last_name, commit_msg)

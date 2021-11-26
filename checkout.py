@@ -53,7 +53,7 @@ def checkout(name):
         util.set_head_content(commit_hash)
 
 
-if __name__ == '__main__':
-    # commit_hash = util.get_branch_content(util.get_head_content())
-    print(sys.argv[1])
-    checkout(sys.argv[1])
+# if __name__ == '__main__':
+#     # commit_hash = util.get_branch_content(util.get_head_content())
+#     print(sys.argv[1])
+#     checkout(sys.argv[1])
