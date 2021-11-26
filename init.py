@@ -27,10 +27,10 @@ def init(base_dir):
         pass
 
 
-if __name__ == '__main__':
-    base_dir = os.getcwd()
-    try:
-        base_dir = sys.argv[1]
-    except IndexError:
-        pass
-    init(base_dir)
+# if __name__ == '__main__':
+#     base_dir = os.getcwd()
+#     try:
+#         base_dir = sys.argv[1]
+#     except IndexError:
+#         pass
+#     init(base_dir)

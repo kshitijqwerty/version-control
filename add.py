@@ -2,7 +2,7 @@ import os
 import shelve
 import util
 import sys
-from constants import VCS_BASE
+from constants import VCS_BASE,VCS_FOLDER
 
 # how does git add check for changes ?
 
@@ -40,7 +40,8 @@ def get_entry(file_path):
 def add(path):
     if os.path.isdir(path):
         for filename in os.listdir(path):
-            add(os.path.join(path, filename))
+            if(filename != VCS_FOLDER):
+                add(os.path.join(path, filename))
     else:
         try:
             # index_stat = get_entry(file_path).stat
@@ -60,9 +61,9 @@ def add(path):
         stage(path, modified)
 
 
-if __name__ == '__main__':
-    fpath = sys.argv[1]
-    add(fpath)
+# if __name__ == '__main__':
+#     fpath = sys.argv[1]
+#     add(fpath)
 
     # print(util.get_modified_entries())
     # print(util.get_modified_entries()[0].modified if util.get_modified_entries() else "")

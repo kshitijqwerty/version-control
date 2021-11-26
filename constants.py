@@ -1,6 +1,7 @@
 import os
 
-VCS_BASE = os.path.join('.temp', '.vcs')
+VCS_FOLDER = '.vcs'
+VCS_BASE = os.path.join('.temp', VCS_FOLDER)
 CWD = os.path.join(os.getcwd(), '.temp')
 INDEX_PATH = os.path.join(VCS_BASE, 'index')
 OBJ_DIR = os.path.join(VCS_BASE, 'objects')
