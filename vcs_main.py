@@ -6,6 +6,8 @@ from commit import commit
 from diff_util import diff
 from init import init
 from log_util import log
+from pull import pull_from_remote
+from push import push_to_remote
 
 
 def main():
@@ -29,6 +31,13 @@ def main():
 
         elif cmmnd == "checkout":
             checkout(sys.argv[2])
+        
+        elif cmmnd == "pull":
+            pull_from_remote(sys.argv[2])
+        
+        elif cmmnd == "push":
+            push_to_remote(sys.argv[2])
+
 
     except IndexError:
         print("Invalid no of args")
