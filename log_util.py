@@ -77,5 +77,5 @@ def log():
     log_util(commit_hash)
 
 
-if __name__ == '__main__':
-    log()
+# if __name__ == '__main__':
+#     log()

@@ -103,5 +103,5 @@ def diff(file_path):
                 diff(f)
 
 
-if __name__ == '__main__':
-    diff(sys.argv[1])
+# if __name__ == '__main__':
+#     diff(sys.argv[1])
