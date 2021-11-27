@@ -10,6 +10,7 @@ from pull import pull_from_remote
 from push import push_to_remote
 from status_util import status
 from rollback import rollback
+from branch import create_branch
 
 
 def main():
@@ -45,6 +46,9 @@ def main():
         
         elif cmmnd == "rollback":
             rollback()
+
+        elif cmmnd == "branch":
+            create_branch(sys.argv[2])
 
 
     except IndexError:

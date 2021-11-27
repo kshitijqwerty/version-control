@@ -153,6 +153,9 @@ def set_modified_status(filepath, modified):
 
 
 def decompress_commit(commit_hash):
-    with open(os.path.join(OBJ_DIR, commit_hash), 'rb') as commit_obj:
-        data = zlib.decompress(commit_obj.read())
-        return pickle.loads(data)
+    try:
+        with open(os.path.join(OBJ_DIR, commit_hash), 'rb') as commit_obj:
+            data = zlib.decompress(commit_obj.read())
+            return pickle.loads(data)
+    except:
+        return

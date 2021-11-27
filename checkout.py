@@ -31,6 +31,13 @@ def checkout(name):
         commit_hash = branch_content
 
     if commit_hash != util.get_branch_content(util.get_head_content()):
+        # decompress commit
+        commit = util.decompress_commit(commit_hash)
+        if commit is None:
+            print("No such branch or commit")
+            return
+        print("commit: ", commit)
+
         # delete existing files
         for filename in os.listdir(CWD):
             if filename != '.vcs':
@@ -40,9 +47,6 @@ def checkout(name):
                 else:
                     os.remove(filepath)
 
-        # decompress commit
-        commit = util.decompress_commit(commit_hash)
-        print("commit: ", commit)
         checkout_util(commit['tree'])
 
     # modify HEAD
