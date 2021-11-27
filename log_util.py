@@ -6,7 +6,6 @@ import pickle
 import zlib
 import os
 
-
 class ANSI():
     def background(code):
         return "\33[{code}m".format(code=code)
@@ -17,13 +16,17 @@ class ANSI():
     def color_text(code):
         return "\33[{code}m".format(code=code)
 
-
 def print_red(message):
     encoding = ANSI.background(1) + ANSI.color_text(49) + ANSI.style_text(
         31) + message
     encoding += ANSI.background(0) + ANSI.color_text(0) + ANSI.style_text(0)
     print(encoding)
 
+def print_yellow(message):
+    encoding = ANSI.background(0) + ANSI.color_text(49) + ANSI.style_text(
+        93) + message
+    encoding += ANSI.background(0) + ANSI.color_text(0) + ANSI.style_text(0)
+    print(encoding)
 
 def print_green(message):
     encoding = ANSI.background(1) + ANSI.color_text(49) + ANSI.style_text(
@@ -31,9 +34,8 @@ def print_green(message):
     encoding += ANSI.background(0) + ANSI.color_text(0) + ANSI.style_text(0)
     print(encoding)
 
-
 def print_commit_log(commit_obj, commit_hash):
-    print_red("LOG:" + commit_hash)
+    print_yellow("LOG:" + commit_hash)
     print_green("tree:" + commit_obj["tree"])
     try:
         print_green("parent:" + commit_obj["parent"])
@@ -42,7 +44,6 @@ def print_commit_log(commit_obj, commit_hash):
     print_green("author:" + commit_obj["author"])
     print_green("committer:" + commit_obj["committer"])
     print_green("message:" + commit_obj["message"] + "\n")
-
 
 def log_util(commit_hash):
     if commit_hash == "":
@@ -70,7 +71,7 @@ def log():
     # with open(os.path.join(BRANCH_DIR, head)) as branch_file:
     #     commit_hash = branch_file.read()
 
-    print_red("Head:" + util.get_head_content() + "\n")
+    print_yellow("Head:" + util.get_head_content() + "\n")
 
     commit_hash = util.get_last_commit_hash()
 
