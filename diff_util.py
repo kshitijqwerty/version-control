@@ -53,18 +53,6 @@ def diff_util(blob_hash, file_path):
     diff_strstr(commit_obj_file.decode('utf-8'), current_file)
 
 
-def get_sha_from_index(filepath):
-    print("get_sha_from_index: ", filepath)
-    with shelve.open(INDEX_PATH) as index:
-        try:
-            print(type(index))
-            print(index)
-            print(index[filepath])
-            sha = index[filepath].sha
-            return sha
-        except KeyError:
-            return
-
 
 def diff(file_path):
     """ 
@@ -78,7 +66,7 @@ def diff(file_path):
         (recursive)
     """
     if os.path.isfile(file_path):
-        commited_file_hash = get_sha_from_index(file_path)
+        commited_file_hash = util.get_sha_from_index(file_path)
 
         if (commited_file_hash == None):
             print("New file:", file_path)
@@ -90,7 +78,7 @@ def diff(file_path):
             f = os.path.join(file_path, filename)
 
             if os.path.isfile(f):
-                commited_file_hash = get_sha_from_index(f)
+                commited_file_hash = util.get_sha_from_index(f)
                 if (commited_file_hash == None):
                     print("New file:", f)
                 else:

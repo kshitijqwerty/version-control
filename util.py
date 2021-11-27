@@ -14,7 +14,7 @@ class Entry:
         self.modified = modified
 
 
-def get_sha(path):
+def compute_sha(path):
     with open(path, 'rb') as file:
         data = file.read()
         hash = hashlib.sha256(data).hexdigest()
@@ -159,3 +159,16 @@ def decompress_commit(commit_hash):
             return pickle.loads(data)
     except:
         return
+
+
+def get_entry_from_index(filepath):
+    with shelve.open(INDEX_PATH) as index:
+        try:
+            return index[filepath]
+        except KeyError:
+            return
+
+
+def update_index_entry(filepath, entry):
+    with shelve.open(INDEX_PATH) as index:
+        index[filepath] = entry

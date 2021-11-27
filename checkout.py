@@ -2,16 +2,27 @@ import util
 import shutil
 from constants import CWD
 import os
+import shelve
 
-
+# TODO: instead of CWD relative path should be here
+# TODO: or change the entire file path pattern
 def checkout_util(tree_hash, path=CWD):
     tree = util.decompress_tree(tree_hash)
     print(tree)
     for entry in tree['entries']:
         print("tree entry: ", entry)
         if entry['type'] == 'blob':
-            util.decompress_file(entry['sha'],
-                                 os.path.join(path, entry['name']))
+            file_path = os.path.join(path, entry['name'])
+            util.decompress_file(entry['sha'], file_path)
+
+            # update index entry
+            print("checkou util: ", entry['sha'])
+            print("checkout util file path", file_path)
+            new_entry = util.Entry(file_path,
+                                   entry['sha'],
+                                   os.stat(file_path),
+                                   False)
+            util.update_index_entry(file_path, new_entry)
         else:
             dir_path = os.path.join(path, entry['name'])
             print(dir_path)
@@ -25,29 +36,30 @@ def checkout(name):
     commit_hash = name
     branch_content = util.get_branch_content(name)
     if branch_content is not None:
-        # if same branch, do nothing
-        if name == util.get_head_content():
-            return
+        # # if same branch, do nothing
+        # if name == util.get_head_content():
+        #     return
         commit_hash = branch_content
 
-    if commit_hash != util.get_branch_content(util.get_head_content()):
-        # decompress commit
-        commit = util.decompress_commit(commit_hash)
-        if commit is None:
-            print("No such branch or commit")
-            return
-        print("commit: ", commit)
+    # if commit_hash != util.get_branch_content(util.get_head_content()):
+    # decompress commit
+    commit = util.decompress_commit(commit_hash)
+    if commit is None:
+        print("No such branch or commit")
+        return
+    print("commit: ", commit)
 
-        # delete existing files
-        for filename in os.listdir(CWD):
-            if filename != '.vcs':
-                filepath = os.path.join(CWD, filename)
-                if os.path.isdir(filepath):
-                    shutil.rmtree(filepath)
-                else:
-                    os.remove(filepath)
+    # delete existing files
+    for filename in os.listdir(CWD):
+        if filename != '.vcs':
+            filepath = os.path.join(CWD, filename)
+            if os.path.isdir(filepath):
+                shutil.rmtree(filepath)
+            else:
+                os.remove(filepath)
 
-        checkout_util(commit['tree'])
+    # create files from checkout
+    checkout_util(commit['tree'])
 
     # modify HEAD
     if branch_content is not None:
