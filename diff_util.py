@@ -1,5 +1,4 @@
 """ display difference between a file(indexed) and another file(not indexed) """
-import shelve
 
 import util
 from constants import OBJ_DIR, BRANCH_DIR, HEAD_PATH, INDEX_PATH

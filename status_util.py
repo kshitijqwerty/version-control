@@ -58,12 +58,13 @@ untracked = []
 
 
 def status_util(file_path):
+    file_path = os.path.normpath(file_path)
     if os.path.isfile(file_path):
         # modified_status = get_modified_status(file_path)
-        print(file_path)
+        # print(file_path)
         index_file_sha = util.get_sha_from_index(file_path)
-        print("status util index file sha: ", index_file_sha)
-        print(index_file_sha)
+        # print("status util index file sha: ", index_file_sha)
+        # print(index_file_sha)
         if index_file_sha == None:
             untracked.append(file_path)
         else:
@@ -81,7 +82,7 @@ def status_util(file_path):
 
 
 def status():
-    status_util(CWD)
+    status_util(".")
     # status_util(".")
 
     print_purple("STATUS")

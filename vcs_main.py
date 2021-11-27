@@ -11,6 +11,8 @@ from push import push_to_remote
 from status_util import status
 from rollback import rollback
 from branch import create_branch
+from constants import CWD
+import os
 
 
 def main():
@@ -18,28 +20,28 @@ def main():
         cmmnd = sys.argv[1]
 
         if cmmnd == "init":
-            init(sys.argv[2])
+            init(CWD)
 
         elif cmmnd == "add":
-            add(sys.argv[2])
+            add(os.path.normpath(sys.argv[2]))
 
         elif cmmnd == "commit":
             commit(commit_msg=sys.argv[2])
 
         elif cmmnd == "diff":
-            diff(sys.argv[2])
+            diff(os.path.normpath(sys.argv[2]))
 
         elif cmmnd == "log":
             log()
 
         elif cmmnd == "checkout":
-            checkout(sys.argv[2])
+            checkout(os.path.normpath(sys.argv[2]))
         
         elif cmmnd == "pull":
-            pull_from_remote(sys.argv[2])
+            pull_from_remote(os.path.normpath(sys.argv[2]))
         
         elif cmmnd == "push":
-            push_to_remote(sys.argv[2])
+            push_to_remote(os.path.normpath(sys.argv[2]))
         
         elif cmmnd == "status":
             status()
@@ -48,7 +50,7 @@ def main():
             rollback()
 
         elif cmmnd == "branch":
-            create_branch(sys.argv[2])
+            create_branch(os.path.normpath(sys.argv[2]))
 
 
     except IndexError:

@@ -218,7 +218,7 @@ def get_staged_tree() -> dict:
                 file_path_parts.pop(i)
             else:
                 i += 1
-        file_path_parts = file_path_parts[1:]
+        # file_path_parts = file_path_parts[1:]
         curr_dir = staged_tree[root_dir_name]
         for part in file_path_parts[:-1]:
             if not curr_dir["dirs"]:

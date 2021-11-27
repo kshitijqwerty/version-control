@@ -1,7 +1,7 @@
 import os
 
 # CWD = os.path.join(os.getcwd(), '.temp')
-CWD = '.temp'
+CWD = ''
 
 VCS_BASE = os.path.join(CWD, '.vcs')
 INDEX_PATH = os.path.join(VCS_BASE, 'index')
