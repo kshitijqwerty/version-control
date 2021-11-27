@@ -9,6 +9,7 @@ from log_util import log
 from pull import pull_from_remote
 from push import push_to_remote
 from status_util import status
+from rollback import rollback
 
 
 def main():
@@ -41,6 +42,9 @@ def main():
         
         elif cmmnd == "status":
             status()
+        
+        elif cmmnd == "rollback":
+            rollback()
 
 
     except IndexError:

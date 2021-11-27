@@ -1,6 +1,6 @@
 import os
 import shutil
-from constants import VCS_BASE,CWD
+from constants import CWD
 import util
 
 def push_util(tree_hash, path=CWD):
@@ -8,9 +8,8 @@ def push_util(tree_hash, path=CWD):
     for entry in tree['entries']:
         print("tree entry: ", entry)
         if entry['type'] == 'blob':
-            pass
-            # util.decompress_file(entry['sha'],
-            #                      os.path.join(path, entry['name']))
+            util.decompress_file(entry['sha'],
+                                 os.path.join(path, entry['name']))
         else:
             dir_path = os.path.join(path, entry['name'])
             print(dir_path)

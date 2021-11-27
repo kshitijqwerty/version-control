@@ -1,13 +1,7 @@
 """ Display the status of files; Tracked, Untracked, Tracked and Modifyed """
-import shelve
-import sys
 
 import util
-from constants import OBJ_DIR, BRANCH_DIR, HEAD_PATH, INDEX_PATH, VCS_FOLDER
-from hashlib import sha256
-import difflib
-import pickle
-import zlib
+from constants import VCS_FOLDER
 import os
 
 # def get_modified_status(filepath):

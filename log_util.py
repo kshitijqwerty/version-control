@@ -1,10 +1,5 @@
 """ Display the commits from the latest commit to the first commit """
 import util
-from constants import OBJ_DIR, BRANCH_DIR, HEAD_PATH
-from hashlib import sha256
-import pickle
-import zlib
-import os
 
 class ANSI():
     def background(code):

@@ -1,4 +1,3 @@
-import sys
 import util
 import shutil
 from constants import CWD

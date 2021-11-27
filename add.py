@@ -1,7 +1,6 @@
 import os
 import shelve
 import util
-import sys
 from constants import VCS_BASE,VCS_FOLDER
 
 # how does git add check for changes ?
