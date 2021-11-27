@@ -10,12 +10,50 @@ import pickle
 import zlib
 import os
 
-def get_modified_status(filepath):
-    with shelve.open(INDEX_PATH) as index:
-        try:
-            return index[filepath].modified
-        except KeyError:
-            return
+# def get_modified_status(filepath):
+#     with shelve.open(INDEX_PATH) as index:
+#         try:
+#             return index[filepath].modified
+#         except KeyError:
+#             return
+
+
+class ANSI():
+    def background(code):
+        return "\33[{code}m".format(code=code)
+
+    def style_text(code):
+        return "\33[{code}m".format(code=code)
+
+    def color_text(code):
+        return "\33[{code}m".format(code=code)
+
+
+def print_red(message):
+    encoding = ANSI.background(1) + ANSI.color_text(49) + ANSI.style_text(
+        31) + message
+    encoding += ANSI.background(0) + ANSI.color_text(0) + ANSI.style_text(0)
+    print(encoding)
+
+def print_yellow(message):
+    encoding = ANSI.background(0) + ANSI.color_text(49) + ANSI.style_text(
+        93) + message
+    encoding += ANSI.background(0) + ANSI.color_text(0) + ANSI.style_text(0)
+    print(encoding)
+
+
+
+def print_green(message):
+    encoding = ANSI.background(1) + ANSI.color_text(49) + ANSI.style_text(
+        32) + message
+    encoding += ANSI.background(0) + ANSI.color_text(0) + ANSI.style_text(0)
+    print(encoding)
+
+def print_purple(message):
+    encoding = ANSI.background(1) + ANSI.color_text(49) + ANSI.style_text(
+        95) + message
+    encoding += ANSI.background(0) + ANSI.color_text(0) + ANSI.style_text(0)
+    print(encoding)
 
 tracked = []
 tracked_modified = []
@@ -23,7 +61,7 @@ untracked = []
 
 def status_util(file_path):
     if os.path.isfile(file_path):
-        modified_status = get_modified_status(file_path)
+        # modified_status = get_modified_status(file_path)
         index_file_sha = util.get_sha_from_index(file_path)
         if index_file_sha == None:
             untracked.append(file_path)
@@ -41,21 +79,25 @@ def status_util(file_path):
 
 
 def status():
-    status_util("./.temp")
+    status_util("./.temp") 
+    # status_util(".")
 
+    print_purple("STATUS")
+    print_green("HEAD=" + util.get_head_content())
 
-    print("Untracked files")
-    print(untracked)
-
-    print("Tracked files")
-    print(tracked)
-
-    print("Tracked but modifyed files")
-    print(tracked_modified)
-
-
-if __name__ == "__main__":
-    status()
-
+    if len(tracked) != 0:
+        print_purple("\nTracked files:")
+        for file in tracked:
+            print_green(file)
     
+    if len(tracked_modified) != 0:
+        print_purple("\nModified files:")
+        for file in tracked_modified:
+            print_red(file)
+        
+    if len(untracked) != 0:
+        print_purple("\nUntracked files:")
+        for file in untracked:
+            print_yellow(file)
+
     
