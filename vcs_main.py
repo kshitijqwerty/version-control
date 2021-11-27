@@ -8,6 +8,7 @@ from init import init
 from log_util import log
 from pull import pull_from_remote
 from push import push_to_remote
+from status_util import status
 
 
 def main():
@@ -37,6 +38,9 @@ def main():
         
         elif cmmnd == "push":
             push_to_remote(sys.argv[2])
+        
+        elif cmmnd == "status":
+            status()
 
 
     except IndexError:
