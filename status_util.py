@@ -1,7 +1,9 @@
+"""FIXED"""
+
 """ Display the status of files; Tracked, Untracked, Tracked and Modifyed """
 
 import util
-from constants import VCS_BASE, CWD
+from constants import VCS_DIR_NAME, CWD
 import os
 
 
@@ -58,10 +60,10 @@ untracked = []
 
 
 def status_util(file_path):
-    file_path = os.path.normpath(file_path)
+
     if os.path.isfile(file_path):
         # modified_status = get_modified_status(file_path)
-        # print(file_path)
+        print(file_path)
         index_file_sha = util.get_sha_from_index(file_path)
         # print("status util index file sha: ", index_file_sha)
         # print(index_file_sha)
@@ -77,16 +79,15 @@ def status_util(file_path):
 
     elif os.path.isdir(file_path):
         for file_name in os.listdir(file_path):
-            if file_name != os.path.basename(VCS_BASE):
+            if file_name != VCS_DIR_NAME:
                 status_util(os.path.join(file_path, file_name))
 
 
 def status():
-    status_util(".")
-    # status_util(".")
+    status_util(CWD)
 
     print_purple("STATUS")
-    print_green("HEAD=" + util.get_head_content())
+    print_green("HEAD: " + util.get_head_content())
 
     if len(tracked) != 0:
         print_purple("\nTracked files:")

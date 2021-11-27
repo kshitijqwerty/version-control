@@ -1,3 +1,4 @@
+"""FIXED"""
 import sys
 
 from add import add
@@ -15,42 +16,50 @@ from constants import CWD
 import os
 
 
+def norm_path(path):
+    normpath = os.path.normpath(path)
+    if normpath == ".":
+        return CWD
+    else:
+        return os.path.join(CWD, normpath)
+
+
 def main():
     try:
         cmmnd = sys.argv[1]
 
         if cmmnd == "init":
-            init(CWD)
+            init()
 
         elif cmmnd == "add":
-            add(os.path.normpath(sys.argv[2]))
+            add(norm_path(sys.argv[2]))
 
         elif cmmnd == "commit":
             commit(commit_msg=sys.argv[2])
 
         elif cmmnd == "diff":
-            diff(os.path.normpath(sys.argv[2]))
+            diff(norm_path(sys.argv[2]))
 
         elif cmmnd == "log":
             log()
 
         elif cmmnd == "checkout":
-            checkout(os.path.normpath(sys.argv[2]))
-        
+            checkout(sys.argv[2])
+
         elif cmmnd == "pull":
-            pull_from_remote(os.path.normpath(sys.argv[2]))
-        
+            pull_from_remote(norm_path(sys.argv[2]))
+
         elif cmmnd == "push":
-            push_to_remote(os.path.normpath(sys.argv[2]))
-        
+            push_to_remote(norm_path(sys.argv[2]))
+
         elif cmmnd == "status":
             status()
-        
+
         elif cmmnd == "rollback":
             rollback()
 
         elif cmmnd == "branch":
-            create_branch(os.path.normpath(sys.argv[2]))
+            create_branch(sys.argv[2])
 
 
     except IndexError:

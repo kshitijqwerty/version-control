@@ -1,35 +1,21 @@
+"""FIXED"""
 import os
-from constants import HEAD_PATH
+import constants as const
 
 
-def init(base_dir):
+def init():
     try:
-        vcs_dir = os.path.join(base_dir, '.vcs')
-        obj_path = os.path.join(vcs_dir, 'objects')
-        ref_path = os.path.join(vcs_dir, 'refs')
-        branch_path = os.path.join(ref_path, 'branch')
+        os.mkdir(const.VCS_DIR_PATH)
+        os.mkdir(const.OBJ_DIR)
+        os.mkdir(const.REFS_DIR)
+        os.mkdir(const.BRANCH_DIR)
 
-        os.mkdir(vcs_dir)
-        os.mkdir(obj_path)
-        os.mkdir(ref_path)
-        os.mkdir(branch_path)
-
-        head_path = os.path.join(vcs_dir, 'HEAD')
-        main_branch_path = os.path.join(branch_path, 'main')
+        main_branch_path = os.path.join(const.BRANCH_DIR, 'main')
 
         with open(main_branch_path, 'w') as branch:
             pass
 
-        with open(HEAD_PATH, "w") as head:
+        with open(const.HEAD_PATH, "w") as head:
             head.write("main")
     except FileExistsError:
         pass
-
-
-# if __name__ == '__main__':
-#     base_dir = os.getcwd()
-#     try:
-#         base_dir = sys.argv[1]
-#     except IndexError:
-#         pass
-#     init(base_dir)
