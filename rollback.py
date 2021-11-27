@@ -1,5 +1,5 @@
-from util import get_last_commit_hash
 from checkout import checkout
+import util
 
 def rollback():
-    checkout(get_last_commit_hash())
+    checkout(util.get_head_content())
