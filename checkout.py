@@ -1,11 +1,9 @@
 import util
 import shutil
-from constants import CWD
+from constants import CWD, VCS_DIR_NAME
 import os
-import shelve
 
-# TODO: instead of CWD relative path should be here
-# TODO: or change the entire file path pattern
+
 def checkout_util(tree_hash, path=CWD):
     tree = util.decompress_tree(tree_hash)
     print(tree)
@@ -32,17 +30,13 @@ def checkout_util(tree_hash, path=CWD):
 
 
 def checkout(name):
-    # do nothing if current commit hash is passed
     commit_hash = name
+
+    # check if passed name is a branch name
     branch_content = util.get_branch_content(name)
     if branch_content is not None:
-        # # if same branch, do nothing
-        # if name == util.get_head_content():
-        #     return
         commit_hash = branch_content
 
-    # if commit_hash != util.get_branch_content(util.get_head_content()):
-    # decompress commit
     commit = util.decompress_commit(commit_hash)
     if commit is None:
         print("No such branch or commit")
@@ -51,7 +45,7 @@ def checkout(name):
 
     # delete existing files
     for filename in os.listdir(CWD):
-        if filename != '.vcs':
+        if filename != VCS_DIR_NAME:
             filepath = os.path.join(CWD, filename)
             if os.path.isdir(filepath):
                 shutil.rmtree(filepath)
@@ -66,9 +60,3 @@ def checkout(name):
         util.set_head_content(name)
     else:
         util.set_head_content(commit_hash)
-
-
-# if __name__ == '__main__':
-#     # commit_hash = util.get_branch_content(util.get_head_content())
-#     print(sys.argv[1])
-#     checkout(sys.argv[1])

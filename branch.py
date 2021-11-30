@@ -1,6 +1,6 @@
 import os
 import util
-from constants import BRANCH_DIR, OBJ_DIR
+from constants import BRANCH_DIR
 
 
 def create_branch(name):

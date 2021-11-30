@@ -2,10 +2,6 @@ import os
 import util
 from constants import CWD
 
-# obj_directory = '.objs'
-directory = ".vcs"
-
-
 
 # entry = {
 #     'mode' : '',
@@ -31,8 +27,8 @@ directory = ".vcs"
 # }
 
 
-
-def reform_commit_tree(staged_files: dict, tree_dict: dict, tree_path: str) -> str:
+def reform_commit_tree(staged_files: dict, tree_dict: dict,
+                       tree_path: str) -> str:
     """Reformation of a tree based on the staged files
 
     Args:
@@ -50,9 +46,10 @@ def reform_commit_tree(staged_files: dict, tree_dict: dict, tree_path: str) -> s
     new_entries = set()
 
     for entry in tree_dict["entries"]:
-        if staged_files['dirs'] and entry["name"] in staged_files["dirs"].keys():
+        if staged_files['dirs'] and entry["name"] in staged_files["dirs"].\
+                keys():
             sub_tree_dict = util.decompress_tree(entry["sha"])
-            
+
             if not sub_tree_dict:
                 print("error, tree dict not found for hash- ", entry["sha"])
 
@@ -70,7 +67,8 @@ def reform_commit_tree(staged_files: dict, tree_dict: dict, tree_path: str) -> s
             tree_entries.append(tree_obj)
             new_entries.add(entry["name"])
 
-        elif staged_files['files'] and entry["name"] in staged_files["files"].keys():
+        elif staged_files['files'] and entry["name"] in staged_files[
+            "files"].keys():
             blob_obj = dict()
             blob_obj["name"] = entry["name"]
             blob_obj["sha"] = staged_files["files"][entry["name"]].sha
@@ -180,17 +178,18 @@ def commit_tree() -> str:
         str: sha of the newly formed tree. None if there are no files to commit
     """
     added_values = get_staged_tree()
-    
+
     if not added_values:
         print('Nothing to commit')
         return
     main_tree_sha = util.get_last_commit_hash()
     if main_tree_sha:
-        main_tree = util.decompress_tree(util.decompress_tree(main_tree_sha)['tree'])
+        main_tree = util.decompress_tree(
+            util.decompress_tree(main_tree_sha)['tree'])
         # print(main_tree)
         if main_tree["name"] in added_values.keys():
-            return reform_commit_tree(added_values[main_tree["name"]], main_tree,
-                          main_tree["name"])
+            return reform_commit_tree(
+                added_values[main_tree["name"]], main_tree, main_tree["name"])
 
     return new_commit_tree(added_values)
 
@@ -233,45 +232,3 @@ def get_staged_tree() -> dict:
 
     print("get_staged_tree ", staged_tree)
     return staged_tree
-
-
-# def commit_tree():
-# objs = os.listdir()
-# if not objs:
-#     #objs folder empty
-#     print('nothing to commit')
-#     return
-
-# def initial_check():
-#     #check if .vcs folder is present in the same directory
-#     if(os.path.exists(path)):
-#         os.chdir(path)
-
-#         #check if objs folder present
-#         if os.path.exists(obj_path):
-#             os.chdir(obj_path)
-#             commit_tree()
-#     else:
-#         print('first run init')
-
-
-# def new_commit_tree_helper(filepath):
-#     tree_entries = list()
-
-#     for something in list(os.listdir(filepath)):
-#         new_path = os.path.join(filepath, something)
-#         if(os.path.isdir(new_path)):
-#             entry = new_commit_tree_helper(new_path)
-#             entry['type'] = 'tree'
-#             tree.append(entry)
-
-#         elif(os.path.isfile(new_path)):
-#             entry = addblob(new_path)
-#             entry['type'] = 'blob'
-#             tree.append(entry)
-
-#     tree = dict()
-#     tree['name'] = os.path.split(filepath)[1]
-#     tree['entries'] = tree_entries
-#     entry = add_blob(tree)
-#     return entry

@@ -1,4 +1,3 @@
-"""FIXED"""
 import os
 import shelve
 import util

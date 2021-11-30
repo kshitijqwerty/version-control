@@ -1,33 +1,7 @@
 """ Display the commits from the latest commit to the first commit """
 import util
+from io_util import print_yellow, print_red, print_green
 
-class ANSI():
-    def background(code):
-        return "\33[{code}m".format(code=code)
-
-    def style_text(code):
-        return "\33[{code}m".format(code=code)
-
-    def color_text(code):
-        return "\33[{code}m".format(code=code)
-
-def print_red(message):
-    encoding = ANSI.background(1) + ANSI.color_text(49) + ANSI.style_text(
-        31) + message
-    encoding += ANSI.background(0) + ANSI.color_text(0) + ANSI.style_text(0)
-    print(encoding)
-
-def print_yellow(message):
-    encoding = ANSI.background(0) + ANSI.color_text(49) + ANSI.style_text(
-        93) + message
-    encoding += ANSI.background(0) + ANSI.color_text(0) + ANSI.style_text(0)
-    print(encoding)
-
-def print_green(message):
-    encoding = ANSI.background(1) + ANSI.color_text(49) + ANSI.style_text(
-        32) + message
-    encoding += ANSI.background(0) + ANSI.color_text(0) + ANSI.style_text(0)
-    print(encoding)
 
 def print_commit_log(commit_obj, commit_hash):
     print_yellow("LOG:" + commit_hash)
@@ -39,6 +13,7 @@ def print_commit_log(commit_obj, commit_hash):
     print_green("author:" + commit_obj["author"])
     print_green("committer:" + commit_obj["committer"])
     print_green("message:" + commit_obj["message"] + "\n")
+
 
 def log_util(commit_hash):
     if commit_hash == "":
@@ -71,7 +46,6 @@ def log():
     commit_hash = util.get_last_commit_hash()
 
     log_util(commit_hash)
-
 
 # if __name__ == '__main__':
 #     log()

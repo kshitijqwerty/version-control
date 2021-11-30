@@ -52,7 +52,6 @@ def diff_util(blob_hash, file_path):
     diff_strstr(commit_obj_file.decode('utf-8'), current_file)
 
 
-
 def diff(file_path):
     """ 
         Input:
@@ -67,7 +66,7 @@ def diff(file_path):
     if os.path.isfile(file_path):
         commited_file_hash = util.get_sha_from_index(file_path)
 
-        if (commited_file_hash == None):
+        if commited_file_hash == None:
             print("New file:", file_path)
         else:
             diff_util(commited_file_hash, file_path)
@@ -78,14 +77,13 @@ def diff(file_path):
 
             if os.path.isfile(f):
                 commited_file_hash = util.get_sha_from_index(f)
-                if (commited_file_hash == None):
+                if commited_file_hash == None:
                     print("New file:", f)
                 else:
                     diff_util(commited_file_hash, f)
 
             elif os.path.isdir(f):
                 diff(f)
-
 
 # if __name__ == '__main__':
 #     diff(sys.argv[1])

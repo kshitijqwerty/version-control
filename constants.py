@@ -1,7 +1,6 @@
 import os
 
-# CWD = os.path.join(os.getcwd(), '.temp')
-# Fixed
+# change CWD to "." for actual use
 CWD = ".temp"
 
 VCS_DIR_NAME = '.vcs'

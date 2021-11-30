@@ -1,4 +1,3 @@
-"""FIXED"""
 import os
 import constants as const
 
